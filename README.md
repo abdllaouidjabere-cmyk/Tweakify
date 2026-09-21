@@ -6,13 +6,13 @@
 ![License](https://img.shields.io/badge/License-MIT-00ff88?style=for-the-badge)
 ![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-0078d4?style=for-the-badge&logo=windows)
 ![Python](https://img.shields.io/badge/Python-3.10+-ffd43b?style=for-the-badge&logo=python&logoColor=white)
-![Stars](https://img.shields.io/github/stars/your-username/Tweakify?style=for-the-badge&color=ff8c00)
+![Stars](https://img.shields.io/github/stars/abdllaouidjabere-cmyk/Tweakify?style=for-the-badge&color=ff8c00)
 
 **A free, open-source, professional-grade Windows optimization suite.**  
 Boost performance · Reclaim RAM · Kill telemetry · Tune your network  
 All from one sleek, dark-themed dashboard.
 
-[⬇️ Download Latest](../../releases/latest) &nbsp;·&nbsp; [🌐 Website](#) &nbsp;·&nbsp; [🐛 Report Bug](../../issues/new) &nbsp;·&nbsp; [💡 Request Feature](../../issues/new)
+[⬇️ Download Latest](https://github.com/abdllaouidjabere-cmyk/Tweakify/releases/latest) &nbsp;·&nbsp; [🌐 Website](https://abdllaouidjabere-cmyk.github.io/Tweakify) &nbsp;·&nbsp; [🐛 Report Bug](https://github.com/abdllaouidjabere-cmyk/Tweakify/issues/new) &nbsp;·&nbsp; [💡 Request Feature](https://github.com/abdllaouidjabere-cmyk/Tweakify/issues/new)
 
 </div>
 
@@ -107,7 +107,7 @@ All operations are logged in real time. The snapshot system records every regist
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/Tweakify.git
+git clone https://github.com/abdllaouidjabere-cmyk/Tweakify.git
 cd Tweakify
 
 # 2. Install dependencies

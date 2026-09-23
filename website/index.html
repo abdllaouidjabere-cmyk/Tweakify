@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tweakify — Windows Performance Suite</title>
+  <meta name="description" content="Tweakify is a free, open-source Windows performance optimization tool. Boost your PC speed, clean junk, and tweak system settings with one click." />
+  <meta name="keywords" content="Tweakify, Windows optimizer, PC performance, open source, free tweak tool" />
+  <link rel="canonical" href="https://tweakify.site/" />
+  <link rel="sitemap" type="application/xml" href="https://tweakify.site/sitemap.xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .modal-overlay {
+      position: fixed !important;
+      top: 0 !important; left: 0 !important;
+      width: 100% !important; height: 100% !important;
+      background: rgba(0, 0, 0, 0.9) !important;
+      backdrop-filter: blur(15px) !important;
+      -webkit-backdrop-filter: blur(15px) !important;
+      z-index: 99999 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: opacity 0.4s ease !important;
+    }
+    .modal-overlay.active {
+      opacity: 1 !important;
+      pointer-events: all !important;
+    }
+    .modal-content {
+      position: relative !important;
+      background: rgba(15, 15, 25, 0.85) !important;
+      backdrop-filter: blur(30px) !important;
+      -webkit-backdrop-filter: blur(30px) !important;
+      border: 1px solid rgba(0, 212, 255, 0.3) !important;
+      border-top: 2px solid rgba(0, 212, 255, 0.7) !important;
+      border-radius: 20px !important;
+      width: 90% !important; max-width: 440px !important;
+      padding: 2.5rem !important;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 60px rgba(0,212,255,0.2) !important;
+      transform: translateY(40px) scale(0.92) !important;
+      opacity: 0 !important;
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+      overflow: hidden !important;
+    }
+    .modal-overlay.active .modal-content {
+      transform: translateY(0) scale(1) !important;
+      opacity: 1 !important;
+    }
+    .modal-header {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      margin-bottom: 1rem !important;
+    }
+    .modal-title {
+      font-size: 1.6rem !important;
+      font-weight: 800 !important;
+      color: #fff !important;
+      margin: 0 !important;
+      text-shadow: 0 0 20px rgba(0,212,255,0.5) !important;
+    }
+    .modal-close {
+      background: rgba(255,255,255,0.07) !important;
+      border: 1px solid rgba(255,255,255,0.15) !important;
+      border-radius: 50% !important;
+      width: 38px !important; height: 38px !important;
+      display: flex !important; align-items: center !important; justify-content: center !important;
+      color: rgba(255,255,255,0.7) !important;
+      font-size: 1.3rem !important; cursor: pointer !important;
+      transition: all 0.3s ease !important;
+    }
+    .modal-close:hover {
+      background: rgba(255,68,68,0.25) !important;
+      border-color: rgba(255,68,68,0.6) !important;
+      color: #fff !important;
+      transform: rotate(90deg) !important;
+    }
+    .modal-desc {
+      color: rgba(255,255,255,0.55) !important;
+      font-size: 0.95rem !important;
+      margin-bottom: 2rem !important;
+      line-height: 1.6 !important;
+    }
+    .form-group {
+      margin-bottom: 1.6rem !important;
+      position: relative !important;
+    }
+    .form-group label {
+      position: absolute !important;
+      top: -11px !important; left: 14px !important;
+      background: #0f0f19 !important;
+      padding: 0 8px !important;
+      border-radius: 4px !important;
+      font-size: 0.72rem !important;
+      color: #00d4ff !important;
+      font-weight: 700 !important;
+      letter-spacing: 1.5px !important;
+      text-transform: uppercase !important;
+      z-index: 2 !important;
+    }
+    .form-group input {
+      width: 100% !important;
+      background: rgba(255,255,255,0.03) !important;
+      border: 1px solid rgba(255,255,255,0.12) !important;
+      border-radius: 12px !important;
+      padding: 1.1rem 1.2rem !important;
+      color: #fff !important;
+      font-family: 'Outfit', sans-serif !important;
+      font-size: 1rem !important;
+      transition: all 0.35s ease !important;
+      box-sizing: border-box !important;
+    }
+    .form-group input:focus {
+      outline: none !important;
+      border-color: #00d4ff !important;
+      background: rgba(0,212,255,0.06) !important;
+      box-shadow: 0 0 22px rgba(0,212,255,0.25) !important;
+      transform: translateY(-2px) !important;
+    }
+    .form-group input::placeholder { color: rgba(255,255,255,0.2) !important; }
+    .btn-submit {
+      width: 100% !important;
+      background: linear-gradient(135deg, #00d4ff 0%, #00ff88 100%) !important;
+      color: #000 !important;
+      border: none !important;
+      border-radius: 12px !important;
+      padding: 1.15rem !important;
+      font-size: 1.05rem !important;
+      font-weight: 800 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 1.5px !important;
+      font-family: 'Outfit', sans-serif !important;
+      cursor: pointer !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      gap: 10px !important;
+      transition: all 0.35s ease !important;
+      margin-top: 2rem !important;
+      box-shadow: 0 8px 30px rgba(0,212,255,0.4) !important;
+    }
+    .btn-submit:hover {
+      transform: translateY(-3px) scale(1.02) !important;
+      box-shadow: 0 15px 45px rgba(0,212,255,0.55) !important;
+    }
+    .reg-message {
+      margin-top: 1.5rem !important;
+      padding: 1rem !important;
+      border-radius: 10px !important;
+      text-align: center !important;
+      font-size: 0.95rem !important;
+      font-weight: 600 !important;
+    }
+    .reg-message.success {
+      background: rgba(0,255,136,0.1) !important;
+      color: #00ff88 !important;
+      border: 1px solid rgba(0,255,136,0.35) !important;
+    }
+    .reg-message.error {
+      background: rgba(255,68,68,0.1) !important;
+      color: #ff4444 !important;
+      border: 1px solid rgba(255,68,68,0.35) !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Animated Background Canvas -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Noise Overlay -->
+  <div class="noise-overlay"></div>
+
+  <!-- ═══════════════ NAVBAR ═══════════════ -->
+  <nav id="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <i class="fa-solid fa-bolt logo-icon"></i>
+        <span class="logo-text">TWEAKIFY</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#features" id="nav-features">Features</a></li>
+        <li><a href="#how-it-works" id="nav-how">How It Works</a></li>
+        <li><a href="#open-source" id="nav-oss">Open Source</a></li>
+        <li><a href="#download" id="nav-download" class="nav-cta">Download</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#features" class="mobile-link">Features</a>
+    <a href="#how-it-works" class="mobile-link">How It Works</a>
+    <a href="#open-source" class="mobile-link">Open Source</a>
+    <a href="#download" class="mobile-link mobile-cta">Download Free</a>
+  </div>
+
+  <!-- ═══════════════ HERO ═══════════════ -->
+  <section id="hero">
+    <div class="hero-content">
+
+      <div class="hero-badge" id="hero-badge">
+        <span class="badge-dot"></span>
+        <span>Open Source · Free Forever</span>
+      </div>
+
+      <h1 class="hero-title" id="hero-title">
+        <span class="title-line">Supercharge</span>
+        <span class="title-line accent-text">Your Windows</span>
+        <span class="title-line">Performance</span>
+      </h1>
+
+      <p class="hero-sub" id="hero-sub">
+        Tweakify is a professional, open-source Windows optimization suite. 
+        Clean junk, boost RAM, disable telemetry, and unlock peak performance — 
+        all in one sleek, powerful dashboard.
+      </p>
+
+      <div class="hero-actions" id="hero-actions">
+        <a href="#download" class="btn-primary" id="btn-hero-download">
+          <i class="fa-solid fa-download btn-icon"></i>
+          Download Free
+          <span class="btn-version">v2.0 PRO</span>
+        </a>
+        <a href="https://github.com/abdllaouidjabere-cmyk/Tweakify" target="_blank" class="btn-secondary" id="btn-hero-github">
+          <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58C20.56 21.8 24 17.3 24 12 24 5.37 18.63 0 12 0z"/>
+          </svg>
+          View on GitHub
+        </a>
+      </div>
+
+      <div class="hero-stats" id="hero-stats">
+        <div class="stat-item">
+          <span class="stat-num" data-target="12">0</span><span class="stat-suffix">+</span>
+          <span class="stat-label">Tweaks</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num" data-target="100">0</span><span class="stat-suffix">%</span>
+          <span class="stat-label">Free &amp; Open</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num" data-target="0">0</span><span class="stat-suffix"></span>
+          <span class="stat-label">Ads / Bloat</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- App Window Mockup -->
+    <div class="hero-mockup" id="hero-mockup">
+      <div class="mockup-window">
+        <div class="window-titlebar">
+          <div class="window-controls">
+            <span class="wc red"></span>
+            <span class="wc yellow"></span>
+            <span class="wc green"></span>
+          </div>
+          <span class="window-title">
+            <i class="fa-solid fa-bolt" style="color:var(--accent); margin-right:4px;"></i>
+            TWEAKIFY v2.0 — Windows Performance Suite
+          </span>
+        </div>
+        <div class="window-body">
+          <div class="mock-header">
+            <span class="mock-logo">
+              <i class="fa-solid fa-bolt"></i> TWEAKIFY
+            </span>
+            <span class="mock-sub">Windows Performance Suite &nbsp;•&nbsp; v2.0 PRO &nbsp;•&nbsp; by Jaber</span>
+          </div>
+          <div class="mock-cards">
+            <div class="mock-card green">
+              <div class="mock-card-title">
+                <i class="fa-solid fa-gauge-high"></i> Performance
+              </div>
+              <div class="mock-bar"><div class="mock-bar-fill" style="width:85%; background:#00ff88;"></div></div>
+              <div class="mock-card-val">Optimized</div>
+            </div>
+            <div class="mock-card cyan">
+              <div class="mock-card-title">
+                <i class="fa-solid fa-shield-halved"></i> Privacy
+              </div>
+              <div class="mock-bar"><div class="mock-bar-fill" style="width:70%; background:#00d4ff;"></div></div>
+              <div class="mock-card-val">Protected</div>
+            </div>
+            <div class="mock-card orange">
+              <div class="mock-card-title">
+                <i class="fa-solid fa-memory"></i> RAM
+              </div>
+              <div class="mock-bar"><div class="mock-bar-fill" style="width:55%; background:#ff8c00;"></div></div>
+              <div class="mock-card-val">8.2 GB Free</div>
+            </div>
+          </div>
+          <div class="mock-console">
+            <div class="console-line">
+              <i class="fa-solid fa-bolt cl-accent"></i> TWEAKIFY ready. Choose an operation to begin.
+            </div>
+            <div class="console-line">
+              <i class="fa-solid fa-check cl-green"></i> System: Windows 10 | x64
+            </div>
+            <div class="console-line">
+              <i class="fa-solid fa-check cl-green"></i> Visual effects disabled — performance boosted.
+            </div>
+            <div class="console-line">
+              <span class="cl-cyan blink">█</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════ FEATURES ═══════════════ -->
+  <section id="features">
+    <div class="section-container">
+      <div class="section-badge">CAPABILITIES</div>
+      <h2 class="section-title">Everything your PC needs, <span class="accent-text">nothing it doesn't.</span></h2>
+      <p class="section-sub">From system cleanup to registry tweaks — Tweakify covers it all with surgical precision.</p>
+
+      <div class="features-grid">
+
+        <div class="feature-card" id="feat-1">
+          <div class="feat-icon" style="color:#00ff88;">
+            <i class="fa-solid fa-gauge-high"></i>
+          </div>
+          <h3>Performance Boost</h3>
+          <p>Disable background services, optimize visual effects, and apply power plan tweaks to squeeze every drop of speed from your hardware.</p>
+          <div class="feat-tag" style="color:#00ff88;">SYSTEM TWEAKS</div>
+        </div>
+
+        <div class="feature-card" id="feat-2">
+          <div class="feat-icon" style="color:#00d4ff;">
+            <i class="fa-solid fa-broom"></i>
+          </div>
+          <h3>Deep Cleaner</h3>
+          <p>Wipe temp files, browser caches, Windows Update garbage, and prefetch data in seconds. Reclaim gigabytes instantly.</p>
+          <div class="feat-tag" style="color:#00d4ff;">CLEANUP</div>
+        </div>
+
+        <div class="feature-card" id="feat-3">
+          <div class="feat-icon" style="color:#a855f7;">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h3>Privacy Shield</h3>
+          <p>Kill telemetry, disable DiagTrack, block data collection services, and take back control of what Microsoft knows about you.</p>
+          <div class="feat-tag" style="color:#a855f7;">PRIVACY</div>
+        </div>
+
+        <div class="feature-card" id="feat-4">
+          <div class="feat-icon" style="color:#ff8c00;">
+            <i class="fa-solid fa-network-wired"></i>
+          </div>
+          <h3>Network Optimizer</h3>
+          <p>Tune TCP/IP stack, adjust DNS settings, and optimize your network adapter for the lowest latency in gaming and browsing.</p>
+          <div class="feat-tag" style="color:#ff8c00;">NETWORK</div>
+        </div>
+
+        <div class="feature-card" id="feat-5">
+          <div class="feat-icon" style="color:#00d4ff;">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </div>
+          <h3>Snapshot &amp; Restore</h3>
+          <p>Take a complete system snapshot before any tweak, and restore everything to its original state with a single click — zero risk.</p>
+          <div class="feat-tag" style="color:#00d4ff;">SAFETY</div>
+        </div>
+
+        <div class="feature-card" id="feat-6">
+          <div class="feat-icon" style="color:#00ff88;">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+          <h3>Live Hardware Monitor</h3>
+          <p>Real-time CPU, RAM, and disk usage dashboards so you can see the impact of every optimization as it happens.</p>
+          <div class="feat-tag" style="color:#00ff88;">MONITORING</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+  <section id="how-it-works">
+    <div class="section-container">
+      <div class="section-badge">HOW IT WORKS</div>
+      <h2 class="section-title">Three steps to a <span class="accent-text">faster Windows.</span></h2>
+
+      <div class="steps-container">
+        <div class="step-line"></div>
+
+        <div class="step-item" id="step-1">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <h3>Download &amp; Run as Admin</h3>
+            <p>Download the single <code>.exe</code> file. Right-click and run as Administrator — no installation required. Tweakify handles UAC automatically.</p>
+          </div>
+        </div>
+
+        <div class="step-item" id="step-2">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <h3>Take a Snapshot</h3>
+            <p>Before touching anything, Tweakify captures a complete snapshot of your system settings. One-click full restore is always available.</p>
+          </div>
+        </div>
+
+        <div class="step-item" id="step-3">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <h3>Apply Your Tweaks</h3>
+            <p>Choose from performance, privacy, network, and cleanup categories. Apply individual tweaks or hit "Apply All" for maximum optimization.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ OPEN SOURCE ═══════════════ -->
+  <section id="open-source">
+    <div class="section-container">
+      <div class="oss-card">
+        <div class="oss-left">
+          <div class="section-badge">OPEN SOURCE</div>
+          <h2 class="section-title" style="text-align:left;">100% Transparent. <span class="accent-text">No secrets.</span></h2>
+          <p class="section-sub" style="text-align:left;">Tweakify is fully open source under the MIT License. Read every line of code, audit what it does, fork it, improve it, and share it. That's the deal.</p>
+          <div class="oss-points">
+            <div class="oss-point">
+              <i class="fa-solid fa-circle-check oss-check"></i>
+              MIT License — use freely in any project
+            </div>
+            <div class="oss-point">
+              <i class="fa-solid fa-circle-check oss-check"></i>
+              No bundled adware, spyware, or trackers
+            </div>
+            <div class="oss-point">
+              <i class="fa-solid fa-circle-check oss-check"></i>
+              Community contributions welcome
+            </div>
+            <div class="oss-point">
+              <i class="fa-solid fa-circle-check oss-check"></i>
+              Transparent registry &amp; command operations
+            </div>
+          </div>
+          <a href="https://github.com/abdllaouidjabere-cmyk/Tweakify" target="_blank" class="btn-primary" id="btn-oss-github" style="margin-top:2rem; display:inline-flex;">
+            <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58C20.56 21.8 24 17.3 24 12 24 5.37 18.63 0 12 0z"/>
+            </svg>
+            View Source on GitHub
+          </a>
+        </div>
+        <div class="oss-right">
+          <div class="code-window">
+            <div class="code-titlebar">
+              <div class="window-controls">
+                <span class="wc red"></span>
+                <span class="wc yellow"></span>
+                <span class="wc green"></span>
+              </div>
+              <span style="font-size:0.75rem; color:#555;">main.py — Tweakify</span>
+            </div>
+            <div class="code-body">
+              <pre><code><span class="c-purple">def</span> <span class="c-cyan">optimize_performance</span>(self):
+    <span class="c-gray">"""Applies all performance tweaks"""</span>
+    results = []
+    
+    <span class="c-comment"># Disable visual animations</span>
+    ok = set_registry(
+        HKCU, <span class="c-green">"Control Panel\\Desktop"</span>,
+        <span class="c-green">"MinAnimate"</span>, <span class="c-orange">0</span>
+    )
+    results.append((<span class="c-green">"Animations"</span>, ok))
+
+    <span class="c-comment"># Set High Performance power plan</span>
+    run_cmd(
+        <span class="c-green">"powercfg /setactive 8c5e7fda"</span>
+    )
+    
+    <span class="c-purple">return</span> results</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ DOWNLOAD ═══════════════ -->
+  <section id="download">
+    <div class="section-container">
+      <div class="download-card">
+        <div class="download-glow"></div>
+        <div class="section-badge">DOWNLOAD</div>
+        <h2 class="section-title">Ready to <span class="accent-text">unleash your PC?</span></h2>
+        <p class="section-sub">Free. No strings. No account. Just download and run.</p>
+
+        <div class="download-box">
+          <div class="download-meta">
+            <div class="dl-info-row">
+              <span class="dl-label">
+                <i class="fa-solid fa-tag" style="margin-right:6px; opacity:0.6;"></i>Version
+              </span>
+              <span class="dl-value accent-text">v2.0 PRO</span>
+            </div>
+            <div class="dl-info-row">
+              <span class="dl-label">
+                <i class="fa-brands fa-windows" style="margin-right:6px; opacity:0.6;"></i>Platform
+              </span>
+              <span class="dl-value">Windows 10 / 11 · 64-bit</span>
+            </div>
+            <div class="dl-info-row">
+              <span class="dl-label">
+                <i class="fa-solid fa-weight-hanging" style="margin-right:6px; opacity:0.6;"></i>Size
+              </span>
+              <span class="dl-value">~25 MB</span>
+            </div>
+            <div class="dl-info-row">
+              <span class="dl-label">
+                <i class="fa-solid fa-scale-balanced" style="margin-right:6px; opacity:0.6;"></i>License
+              </span>
+              <span class="dl-value" style="color:#00ff88;">MIT — Free &amp; Open Source</span>
+            </div>
+          </div>
+
+          <a href="javascript:void(0)" class="btn-download" id="btn-main-download">
+            <div class="btn-download-inner">
+              <i class="fa-solid fa-download dl-icon"></i>
+              <div>
+                <div class="dl-main">Download Tweakify.exe</div>
+                <div class="dl-sub">Windows · Standalone · No install required</div>
+              </div>
+            </div>
+          </a>
+
+          <p class="dl-disclaimer">
+            <i class="fa-solid fa-triangle-exclamation" style="color:var(--orange); margin-right:5px;"></i>
+            Requires Administrator privileges to apply system tweaks. Always create a snapshot before optimizing.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <footer id="footer">
+    <div class="footer-container">
+      <div class="footer-logo">
+        <i class="fa-solid fa-bolt logo-icon"></i>
+        <span class="logo-text">TWEAKIFY</span>
+      </div>
+      <p class="footer-desc">An open-source Windows performance suite by Jaber. Built with Python &amp; CustomTkinter.</p>
+      <div class="footer-links">
+        <a href="https://github.com/abdllaouidjabere-cmyk/Tweakify" target="_blank">
+          <i class="fa-brands fa-github" style="margin-right:5px;"></i>GitHub
+        </a>
+        <a href="#features">Features</a>
+        <a href="#download">Download</a>
+      </div>
+      <p class="footer-copy">
+        &copy; 2025 Tweakify &nbsp;·&nbsp; MIT License &nbsp;·&nbsp; Made with
+        <i class="fa-solid fa-bolt" style="color:var(--accent); margin:0 2px;"></i>
+        by Jaber
+      </p>
+    </div>
+  </footer>
+
+  <!-- ═══════════════ REGISTRATION MODAL ═══════════════ -->
+  <div id="registration-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-user-shield" style="color:var(--accent); margin-right:8px;"></i> Access Download</h3>
+        <button id="close-modal" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Please enter your details to begin the download.</p>
+        <form id="registration-form">
+          <div class="form-group">
+            <label for="reg-name">Full Name</label>
+            <input type="text" id="reg-name" required placeholder="John Doe">
+          </div>
+          <div class="form-group">
+            <label for="reg-phone">Phone Number</label>
+            <input type="tel" id="reg-phone" required placeholder="+1 234 567 8900">
+          </div>
+          <div class="form-group">
+            <label for="reg-email">Email Address</label>
+            <input type="email" id="reg-email" required placeholder="john@example.com">
+          </div>
+          <div class="form-group">
+            <label for="reg-country">Country</label>
+            <input type="text" id="reg-country" required placeholder="United States">
+          </div>
+          <button type="submit" class="btn-submit" id="btn-submit-reg">
+            <span>Continue to Download</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+        <div id="reg-message" class="reg-message" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

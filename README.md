@@ -133,9 +133,9 @@ Tweakify/
 ├── setup.iss            # Inno Setup installer script
 ├── README.md            # This file
 ├── website/             # Landing page (HTML/CSS/JS)
-│   ├── index.html
-│   ├── style.css
-│   └── script.js
+│  ├── index.html
+│  ├── style.css
+   └── script.js
 
 ```
 

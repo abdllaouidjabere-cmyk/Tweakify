@@ -136,8 +136,7 @@ Tweakify/
 │   ├── index.html
 │   ├── style.css
 │   └── script.js
-├── dist/                # Compiled executable (after build)
-└── build/               # PyInstaller build cache
+
 ```
 
 ---
